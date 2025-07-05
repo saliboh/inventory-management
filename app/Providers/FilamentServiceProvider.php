@@ -55,6 +55,7 @@ class FilamentServiceProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 FilamentAdminMiddleware::class,
-            ]);
+            ])
+            ->brandName('Daanbantayan Water District');
     }
 }

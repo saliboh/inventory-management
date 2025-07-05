@@ -26,6 +26,8 @@ class ListProductMovements extends ListRecords
 
     public function getSubheading(): string
     {
-        return 'From here you can manage the in and out of products from your warehouses.';
+        return 'From here you can manage and track the in and out of products from your warehouses.
+Use the "Create" button to add new movements, and filter by product or warehouse to find specific records.
+You can also filter specific product movement and filter it by date anb or warehouse.';
     }
 }

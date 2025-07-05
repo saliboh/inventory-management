@@ -14,6 +14,6 @@ class CustomDashboard extends Page
 
     public function getTitle(): string
     {
-        return 'DB Water District IMS'; // Change this to your desired title
+        return 'LOWA Inventory Stock Tracker';
     }
 }
