@@ -143,6 +143,7 @@ class ProductMovementResource extends Resource
                     ->options([
                         'entry' => 'Entry',
                         'exit' => 'Exit',
+                        'transfer' => 'Transfer',
                     ]),
                 Tables\Filters\SelectFilter::make('warehouse_id')
                     ->label('Warehouse')
