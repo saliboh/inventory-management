@@ -15,12 +15,12 @@
                         </div>
                     @endif
 
-                    <h3 class="text-lg font-semibold mb-4">{{ __("Accessing the Admin Panel") }}</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ __("Accessing the Inventory Tracking System") }}</h3>
 
-                    <p class="mb-4">{{ __("To access the Filament admin panel:") }}</p>
+                    <p class="mb-4">{{ __("To access the dashboard:") }}</p>
 
                     <ol class="list-decimal list-inside mb-6 space-y-2">
-                        <li>{{ __("Make sure you're logged in with an admin account (admin@example.com)") }}</li>
+                        <li>{{ __("Make sure you're logged in with an admin account (admin@test.com)") }}</li>
                         <li>{{ __("Visit the admin panel directly at:") }} <a href="{{ url('/admin') }}" class="text-amber-600 hover:text-amber-500">{{ url('/admin') }}</a></li>
                         <li>{{ __("From there, you can access all admin resources") }}</li>
                     </ol>
