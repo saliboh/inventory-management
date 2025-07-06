@@ -138,6 +138,7 @@ class ProductMovementResource extends Resource
                     ->label('Created By')
                     ->searchable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('movement_type')
                     ->options([

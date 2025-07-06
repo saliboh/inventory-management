@@ -26,7 +26,7 @@ class CreateProductMovement extends CreateRecord
                 'product_id' => $data['product_id'],
                 'warehouse_id' => $data['from_warehouse_id'],
                 'quantity' => -abs($data['quantity']),
-                'movement_type' => 'exit',
+                'movement_type' => 'transfer',
                 'notes' => ($data['notes'] ?? '') . ' (Transfer out)',
                 'user_id' => $data['user_id'],
             ];
@@ -37,7 +37,7 @@ class CreateProductMovement extends CreateRecord
                 'product_id' => $data['product_id'],
                 'warehouse_id' => $data['to_warehouse_id'],
                 'quantity' => abs($data['quantity']),
-                'movement_type' => 'entry',
+                'movement_type' => 'transfer',
                 'notes' => ($data['notes'] ?? '') . ' (Transfer in)',
                 'user_id' => $data['user_id'],
             ];
