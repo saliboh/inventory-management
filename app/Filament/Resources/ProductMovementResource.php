@@ -7,13 +7,13 @@ use App\Models\Product;
 use App\Models\ProductMovement;
 use App\Models\Warehouse;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Carbon;
 
 class ProductMovementResource extends Resource
 {
@@ -132,7 +132,8 @@ class ProductMovementResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Created at')
+                    ->formatStateUsing(fn ($state): string => Carbon::parse($state)->format('M d, Y H:i'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Created By')
@@ -154,8 +155,8 @@ class ProductMovementResource extends Resource
                     ->options(Product::all()->pluck('name', 'id')),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
-                        \Filament\Forms\Components\DatePicker::make('created_from')->label('Created From'),
-                        \Filament\Forms\Components\DatePicker::make('created_until')->label('Created Until'),
+                        DatePicker::make('created_from')->label('Created From'),
+                        DatePicker::make('created_until')->label('Created Until'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
