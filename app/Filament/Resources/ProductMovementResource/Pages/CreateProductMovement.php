@@ -27,9 +27,11 @@ class CreateProductMovement extends CreateRecord
                 'warehouse_id' => $data['from_warehouse_id'],
                 'quantity' => -abs($data['quantity']),
                 'movement_type' => 'transfer',
-                'notes' => ($data['notes'] ?? '') . ' (Transfer out)',
+                'notes' => ($data['notes'] ?? '') . ' (Transfer out) [from_warehouse_id:' . $data['from_warehouse_id'] . ']',
                 'user_id' => $data['user_id'],
             ];
+
+            // Create an exit movement
             $exitMovement = static::getModel()::create($exitData);
 
             // Create entry movement to destination warehouse
@@ -38,12 +40,13 @@ class CreateProductMovement extends CreateRecord
                 'warehouse_id' => $data['to_warehouse_id'],
                 'quantity' => abs($data['quantity']),
                 'movement_type' => 'transfer',
-                'notes' => ($data['notes'] ?? '') . ' (Transfer in)',
+                'price_reference' => $data['price_reference'] ?? null,
+                'notes' => ($data['notes'] ?? '') . ' (Transfer in) [from_warehouse_id:' . $data['from_warehouse_id'] . ']',
                 'user_id' => $data['user_id'],
             ];
-            $entryMovement = static::getModel()::create($entryData);
 
-            return $entryMovement;
+            // Create entry movement
+            return static::getModel()::create($entryData);
         }
 
         // Adjust the quantity based on movement type if needed

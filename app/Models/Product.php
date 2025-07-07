@@ -20,6 +20,8 @@ class Product extends Model
         'sku',
         'description',
         'price',
+        'supplier_id',
+        'unit_id',
     ];
 
     /**

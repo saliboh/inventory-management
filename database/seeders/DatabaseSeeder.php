@@ -25,5 +25,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
             'is_admin' => true,
         ]);
+
+        // Seed the application with sample data
+        $this->call([
+            WarehouseSeeder::class,
+            SupplierSeeder::class,
+            ProductSeeder::class,
+            EmployeeSeeder::class,
+        ]);
     }
 }

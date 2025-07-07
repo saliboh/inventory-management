@@ -19,7 +19,11 @@ class ProductMovement extends Model
         'product_id',
         'warehouse_id',
         'user_id',
+        'requested_by',
         'quantity',
+        'unit_price',
+        'total_price',
+        'price_reference',
         'movement_type',
         'notes',
     ];
@@ -31,6 +35,8 @@ class ProductMovement extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
     ];
 
     /**
@@ -55,6 +61,30 @@ class ProductMovement extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the employee who requested the movement.
+     */
+    public function requestedBy(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'requested_by');
+    }
+
+    /**
+     * Get the product batch that was created by this entry movement.
+     */
+    public function productBatch()
+    {
+        return $this->hasOne(ProductBatch::class);
+    }
+
+    /**
+     * Get the product exit batches that were created by this exit movement.
+     */
+    public function productExitBatches()
+    {
+        return $this->hasMany(ProductExitBatch::class);
     }
 
     /**

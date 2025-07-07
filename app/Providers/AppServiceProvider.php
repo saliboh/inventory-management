@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\ProductMovement;
+use App\Observers\ProductMovementObserver;
+use App\Services\InventoryBatchService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +15,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(InventoryBatchService::class, function ($app) {
+            return new InventoryBatchService();
+        });
     }
 
     /**
@@ -20,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        URL::forceHttps('https');
+        //URL::forceHttps('https');
+
+        ProductMovement::observe(ProductMovementObserver::class);
     }
 }

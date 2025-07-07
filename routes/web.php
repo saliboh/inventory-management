@@ -26,4 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/product-movements/{productMovement}/print', [\App\Http\Controllers\ProductMovementController::class, 'printView'])
+    ->name('product-movements.print');
+
 require __DIR__.'/auth.php';
