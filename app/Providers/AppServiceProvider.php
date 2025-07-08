@@ -25,7 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //URL::forceHttps('https');
+        if (env('APP_ENV') != 'local') {
+            URL::forceHttps('https');
+        }
+
 
         ProductMovement::observe(ProductMovementObserver::class);
     }
