@@ -151,6 +151,13 @@
                     <span>{{ $movement->supplier?->name ?? 'N/A' }}</span>
                 </div>
                 @endif
+
+                @if ($movement->movement_type ==='exit')
+                    <div class="field">
+                        <span class="field-label">Requested by:</span>
+                        <span>{{ $movement->requestedBy?->full_name ?? 'N/A' }}</span>
+                    </div>
+                @endif
             </div>
             <div class="column">
                 <div class="field">
