@@ -14,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use App\Models\Supplier;
 
 class ProductMovementResource extends Resource
 {
@@ -100,9 +101,16 @@ class ProductMovementResource extends Resource
                     ->label('Price Reference/Invoice')
                     ->visible(fn (callable $get) => $get('movement_type') === 'entry')
                     ->placeholder('e.g., INV-12345'),
+                Forms\Components\Select::make('supplier_id')
+                    ->label('Supplier')
+                    ->relationship('supplier', 'name')
+                    ->searchable()
+                    ->required(fn (callable $get) => $get('movement_type') === 'entry')
+                    ->visible(fn (callable $get) => $get('movement_type') === 'entry')
+                    ->rules(['exists:suppliers,id']),
                 Forms\Components\Select::make('requested_by')
                     ->label('Requested By')
-                    ->relationship('requestedBy', 'full_name')
+                    ->options(Supplier::pluck('name', 'id'))
                     ->searchable()
                     ->preload()
                     ->visible(fn (callable $get) => $get('movement_type') === 'exit')

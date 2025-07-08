@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('warehouse_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('supplier_id')->nullable();
             $table->integer('quantity');
             $table->string('movement_type'); // 'entry', 'exit', etc.
             $table->text('notes')->nullable();

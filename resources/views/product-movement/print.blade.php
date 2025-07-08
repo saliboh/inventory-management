@@ -144,6 +144,13 @@
                     <span class="field-label">Created By:</span>
                     <span>{{ $movement->user->name }}</span>
                 </div>
+
+                @if ($movement->movement_type ==='entry')
+                <div class="field">
+                    <span class="field-label">Supplier:</span>
+                    <span>{{ $movement->supplier?->name ?? 'N/A' }}</span>
+                </div>
+                @endif
             </div>
             <div class="column">
                 <div class="field">
@@ -267,11 +274,14 @@
 
     <div class="footer">
         <p>This is an official document of the Inventory Management System.<br>Generated on {{ now()->format('F d, Y h:i:s A') }}</p>
+        <p>Developed by Andrean Earl Erasmo</p>
+        <p class="disclaimer">Disclaimer: This software has not been fully tested and should not be used as the sole basis for critical business decisions.</p>
     </div>
 
     <div class="no-print" style="text-align: center; margin-top: 30px;">
         <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Print this page</button>
     </div>
+
 </body>
 </html>
 

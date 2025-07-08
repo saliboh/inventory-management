@@ -256,10 +256,13 @@
     </table>
 
     <div class="footer">
-        <p>This is an official document of the Inventory Management System.<br>
+        <p>
         This report is generated for COA compliance purposes.<br>
         Values calculated using FIFO (First-In, First-Out) method.<br>
         Generated on {{ $generatedAt }}</p>
+        <p>Developed by Andrean Earl Erasmo</p>
+        <p class="disclaimer">Disclaimer: This software has not been fully tested and should not be used as the sole basis for critical business decisions.</p>
+
     </div>
 
     <div class="no-print" style="text-align: center; margin-top: 30px;">

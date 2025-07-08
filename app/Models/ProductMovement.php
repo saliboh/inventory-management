@@ -79,6 +79,11 @@ class ProductMovement extends Model
         return $this->hasOne(ProductBatch::class);
     }
 
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     /**
      * Get the product exit batches that were created by this exit movement.
      */
