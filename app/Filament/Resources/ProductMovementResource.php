@@ -36,7 +36,6 @@ class ProductMovementResource extends Resource
                     ->options([
                         'entry' => 'Entry',
                         'exit' => 'Exit',
-                        'transfer' => 'Transfer',
                     ])
                     ->required()
                     ->reactive(),
@@ -44,34 +43,11 @@ class ProductMovementResource extends Resource
                     ->label('Warehouse')
                     ->options(Warehouse::all()->pluck('name', 'id'))
                     ->searchable()
-                    ->required()
-                    ->visible(fn (callable $get) => in_array($get('movement_type'), ['entry', 'exit'])),
-                Forms\Components\Select::make('from_warehouse_id')
-                    ->label('From Warehouse')
-                    ->options(Warehouse::all()->pluck('name', 'id'))
-                    ->searchable()
-                    ->required()
-                    ->visible(fn (callable $get) => $get('movement_type') === 'transfer')
-                    ->reactive(),
-                Forms\Components\Select::make('to_warehouse_id')
-                    ->label('To Warehouse')
-                    ->options(function (callable $get) {
-                        $from = $get('from_warehouse_id');
-                        $warehouses = Warehouse::all();
-                        if ($from) {
-                            return $warehouses->where('id', '!=', $from)->pluck('name', 'id');
-                        }
-                        return $warehouses->pluck('name', 'id');
-                    })
-                    ->searchable()
-                    ->required()
-                    ->visible(fn (callable $get) => $get('movement_type') === 'transfer')
-                    ->different('from_warehouse_id')
-                    ->reactive(),
+                    ->required(),
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->integer()
-                    ->helperText('Use positive values for entries, negative values for exits. For transfer, this is the amount to move.')
+                    ->helperText('Use positive values for entries, negative values for exits.')
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $get, callable $set) {
                         $unitPrice = $get('unit_price');
@@ -83,7 +59,7 @@ class ProductMovementResource extends Resource
                         $movementType = $get('movement_type');
                         $productId = $get('product_id');
                         $warehouseId = $get('warehouse_id');
-                        $fromWarehouseId = $get('from_warehouse_id');
+
                         if ($movementType === 'exit' && $productId && $warehouseId) {
                             $stock = \App\Models\ProductMovement::where('product_id', $productId)
                                 ->where('warehouse_id', $warehouseId)
@@ -96,18 +72,7 @@ class ProductMovementResource extends Resource
                                 }
                             ];
                         }
-                        if ($movementType === 'transfer' && $productId && $fromWarehouseId) {
-                            $stock = \App\Models\ProductMovement::where('product_id', $productId)
-                                ->where('warehouse_id', $fromWarehouseId)
-                                ->sum('quantity');
-                            return [
-                                function ($attribute, $value, $fail) use ($stock) {
-                                    if ($value > $stock) {
-                                        $fail('The transfer quantity exceeds the available stock in the source warehouse. Available: ' . $stock);
-                                    }
-                                }
-                            ];
-                        }
+
                         return [];
                     }),
                 Forms\Components\TextInput::make('unit_price')
@@ -133,12 +98,8 @@ class ProductMovementResource extends Resource
                     ->dehydrated(),
                 Forms\Components\TextInput::make('price_reference')
                     ->label('Price Reference/Invoice')
-                    ->visible(fn (callable $get) => in_array($get('movement_type'), ['entry', 'transfer']))
-                    ->placeholder('e.g., INV-12345 or TR-12345'),
-                Forms\Components\Placeholder::make('transfer_price_note')
-                    ->label('Price Calculation Note')
-                    ->content('Prices for transfers are automatically calculated using FIFO method from source warehouse stock.')
-                    ->visible(fn (callable $get) => $get('movement_type') === 'transfer'),
+                    ->visible(fn (callable $get) => $get('movement_type') === 'entry')
+                    ->placeholder('e.g., INV-12345'),
                 Forms\Components\Select::make('requested_by')
                     ->label('Requested By')
                     ->relationship('requestedBy', 'full_name')
@@ -161,25 +122,7 @@ class ProductMovementResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('warehouse.name')
                     ->label('Warehouse')
-                    ->description(fn (ProductMovement $record) => $record->movement_type === 'transfer' ? 'To Warehouse' : '')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('from_warehouse')
-                    ->label('From Warehouse')
-                    ->getStateUsing(function (ProductMovement $record) {
-                        if ($record->movement_type === 'transfer') {
-                            // Try to get from_warehouse_id from meta or notes
-                            // This is a workaround since we don't have a dedicated column
-                            if ($record->notes && str_contains($record->notes, 'from_warehouse_id:')) {
-                                preg_match('/from_warehouse_id:(\d+)/', $record->notes, $matches);
-                                if (isset($matches[1])) {
-                                    $fromWarehouseId = $matches[1];
-                                    return Warehouse::find($fromWarehouseId)?->name;
-                                }
-                            }
-                        }
-                        return null;
-                    })
-                    ->visible(fn (?ProductMovement $record) => $record?->movement_type === 'transfer'),
                 Tables\Columns\TextColumn::make('quantity')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('movement_type')
@@ -187,41 +130,14 @@ class ProductMovementResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'entry' => 'success',
                         'exit' => 'danger',
-                        'transfer' => 'warning',
-                        'adjustment' => 'info',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('unit_price')
                     ->money('PHP')
-                    ->sortable()
-                    ->getStateUsing(function (ProductMovement $record) {
-                        if ($record->movement_type === 'transfer') {
-                            // For transfers, we need to calculate the average price from batches
-                            $exitBatches = $record->productExitBatches;
-                            if ($exitBatches && $exitBatches->count() > 0) {
-                                $totalQuantity = $exitBatches->sum('quantity_taken');
-                                $totalPrice = $exitBatches->sum('total_price');
-
-                                if ($totalQuantity > 0) {
-                                    return $totalPrice / $totalQuantity;
-                                }
-                            }
-                        }
-                        return $record->unit_price;
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_price')
                     ->money('PHP')
-                    ->sortable()
-                    ->getStateUsing(function (ProductMovement $record) {
-                        if ($record->movement_type === 'transfer') {
-                            // For transfers, we need to calculate the total price from batches
-                            $exitBatches = $record->productExitBatches;
-                            if ($exitBatches && $exitBatches->count() > 0) {
-                                return $exitBatches->sum('total_price');
-                            }
-                        }
-                        return $record->total_price;
-                    }),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('price_reference')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -239,7 +155,6 @@ class ProductMovementResource extends Resource
                     ->options([
                         'entry' => 'Entry',
                         'exit' => 'Exit',
-                        'transfer' => 'Transfer',
                     ]),
                 Tables\Filters\SelectFilter::make('warehouse_id')
                     ->label('Warehouse')

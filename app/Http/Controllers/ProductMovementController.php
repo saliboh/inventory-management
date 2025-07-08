@@ -28,38 +28,45 @@ class ProductMovementController extends Controller
                 }
             }
         }
-        
+
         // Get batch information for transfers and exits
         $batches = [];
         $calculatedUnitPrice = $productMovement->unit_price;
         $calculatedTotalPrice = $productMovement->total_price;
-        
+
         if (in_array($productMovement->movement_type, ['transfer', 'exit'])) {
             $exitBatches = ProductExitBatch::where('product_movement_id', $productMovement->id)
                 ->with('productBatch')
                 ->get();
-                
+
             if ($exitBatches->count() > 0) {
                 $batches = $exitBatches;
-                
+
                 // Calculate prices based on batches
                 $totalCost = $exitBatches->sum('total_price');
                 $totalQuantity = $exitBatches->sum('quantity_taken');
-                
+
                 if ($totalQuantity > 0) {
                     $calculatedUnitPrice = $totalCost / $totalQuantity;
                 }
-                
+
                 $calculatedTotalPrice = $totalCost;
             }
         }
-        
+
+        // For exit movements, convert quantity to positive value for display
+        $displayQuantity = $productMovement->quantity;
+        if ($productMovement->movement_type === 'exit') {
+            $displayQuantity = abs($displayQuantity);
+        }
+
         return view('product-movement.print', [
             'movement' => $productMovement,
             'sourceWarehouse' => $sourceWarehouse,
             'batches' => $batches,
             'calculatedUnitPrice' => $calculatedUnitPrice,
             'calculatedTotalPrice' => $calculatedTotalPrice,
+            'displayQuantity' => $displayQuantity,
         ]);
     }
 }

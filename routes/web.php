@@ -28,5 +28,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/product-movements/{productMovement}/print', [\App\Http\Controllers\ProductMovementController::class, 'printView'])
     ->name('product-movements.print');
+Route::get('/product-stock-report/print', [\App\Http\Controllers\ProductStockReportController::class, 'printView'])
+    ->name('product-stock.print');
 
 require __DIR__.'/auth.php';

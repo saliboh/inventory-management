@@ -31,10 +31,6 @@ class ProductResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->numeric()
-                    ->prefix('₱'),
                 Forms\Components\Textarea::make('description')
                     ->maxLength(65535)
                     ->columnSpanFull(),
@@ -49,10 +45,6 @@ class ProductResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sku')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->label('Price')
-                    ->money('PHP', true)
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -3,15 +3,10 @@
 namespace App\Filament\Resources\ProductMovementResource\Pages;
 
 use App\Filament\Resources\ProductMovementResource;
-use App\Models\ProductBatch;
 use App\Models\ProductExitBatch;
 use App\Models\Warehouse;
 use Filament\Actions;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Group;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
@@ -51,7 +46,15 @@ class ViewProductMovement extends ViewRecord
                                 default => 'gray',
                             }),
                         TextEntry::make('quantity')
-                            ->label('Quantity'),
+                            ->label('Quantity')
+                            ->getStateUsing(function ($record) {
+                                // For exit movements, display the absolute value (positive number)
+                                if ($record->movement_type === 'exit') {
+                                    return abs($record->quantity);
+                                }
+
+                                return $record->quantity;
+                            }),
                         TextEntry::make('created_at')
                             ->label('Date & Time')
                             ->dateTime(),
@@ -147,29 +150,30 @@ class ViewProductMovement extends ViewRecord
                                         return '<p>No batch information available.</p>';
                                     }
 
-                                    $html = '<table class="w-full text-sm">
-                                        <thead>
-                                            <tr class="border-b">
-                                                <th class="text-left py-2">Batch</th>
-                                                <th class="text-left py-2">Date</th>
-                                                <th class="text-right py-2">Quantity</th>
-                                                <th class="text-right py-2">Unit Price</th>
-                                                <th class="text-right py-2">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>';
+                                    $html = '<div style="overflow-x: auto;">
+                                        <table class="w-full text-sm" style="min-width: 800px;">
+                                            <thead>
+                                                <tr class="border-b">
+                                                    <th class="text-left py-2 px-3" style="width: 15%">Batch</th>
+                                                    <th class="text-left py-2 px-3" style="width: 20%">Date</th>
+                                                    <th class="text-right py-2 px-3" style="width: 15%">Quantity</th>
+                                                    <th class="text-right py-2 px-3" style="width: 25%">Unit Price (PHP)</th>
+                                                    <th class="text-right py-2 px-3" style="width: 25%">Total (PHP)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>';
 
                                     foreach ($exitBatches as $batch) {
                                         $html .= '<tr class="border-b">
-                                            <td class="py-2">#' . $batch->productBatch?->id . '</td>
-                                            <td class="py-2">' . $batch->productBatch?->created_at->format('M d, Y') . '</td>
-                                            <td class="py-2 text-right">' . number_format($batch->quantity_taken) . '</td>
-                                            <td class="py-2 text-right">PHP ' . number_format($batch->unit_price, 2) . '</td>
-                                            <td class="py-2 text-right">PHP ' . number_format($batch->total_price, 2) . '</td>
+                                            <td class="py-2 px-3">#' . $batch->productBatch?->id . '</td>
+                                            <td class="py-2 px-3">' . $batch->productBatch?->created_at->format('M d, Y') . '</td>
+                                            <td class="py-2 px-3 text-right">' . number_format($batch->quantity_taken) . '</td>
+                                            <td class="py-2 px-3 text-right">' . number_format($batch->unit_price, 2) . '</td>
+                                            <td class="py-2 px-3 text-right">' . number_format($batch->total_price, 2) . '</td>
                                         </tr>';
                                     }
 
-                                    $html .= '</tbody></table>';
+                                    $html .= '</tbody></table></div>';
                                     return $html;
                                 }
 

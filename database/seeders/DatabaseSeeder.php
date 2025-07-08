@@ -26,6 +26,12 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
+        User::factory()->create([
+            'name' => 'Super admin',
+            'email' => 'admin@test.com',
+            'is_admin' => true,
+        ]);
+
         // Seed the application with sample data
         $this->call([
             WarehouseSeeder::class,

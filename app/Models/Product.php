@@ -19,7 +19,6 @@ class Product extends Model
         'name',
         'sku',
         'description',
-        'price',
         'supplier_id',
         'unit_id',
     ];
@@ -30,7 +29,7 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'price' => 'decimal:2',
+        // Price is now handled in product movements
     ];
 
     /**

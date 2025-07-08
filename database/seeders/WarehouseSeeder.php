@@ -14,17 +14,17 @@ class WarehouseSeeder extends Seeder
     {
         $warehouses = [
             [
-                'name' => 'Main Warehouse',
+                'name' => 'Poblacion Warehouse',
                 'location' => 'Manila',
                 'description' => 'Primary storage facility for all products',
             ],
             [
-                'name' => 'South Branch',
+                'name' => 'Talisay Warehouse',
                 'location' => 'Cebu',
                 'description' => 'Regional warehouse for southern distribution',
             ],
             [
-                'name' => 'North Branch',
+                'name' => 'Malingin',
                 'location' => 'Baguio',
                 'description' => 'Regional warehouse for northern distribution',
             ],

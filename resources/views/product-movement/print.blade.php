@@ -138,7 +138,7 @@
                 </div>
                 <div class="field">
                     <span class="field-label">Quantity:</span>
-                    <span>{{ number_format($movement->quantity) }}</span>
+                    <span>{{ number_format(abs($displayQuantity)) }}</span>
                 </div>
                 <div class="field">
                     <span class="field-label">Created By:</span>
