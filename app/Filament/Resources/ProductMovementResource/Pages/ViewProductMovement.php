@@ -60,6 +60,9 @@ class ViewProductMovement extends ViewRecord
                             ->dateTime(),
                         TextEntry::make('user.name')
                             ->label('Created By'),
+                        TextEntry::make('requestedBy.full_name')
+                            ->label('Requested By')
+                            ->visible(fn ($record) => $record->movement_type === 'exit'),
                         TextEntry::make('supplier.name')
                             ->label('Supplier')
                             ->visible(fn ($record) => $record->movement_type === 'entry'),

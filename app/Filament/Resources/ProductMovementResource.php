@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductMovementResource\Pages;
+use App\Models\Employee;
 use App\Models\Product;
 use App\Models\ProductMovement;
 use App\Models\Warehouse;
@@ -14,7 +15,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use App\Models\Supplier;
 
 class ProductMovementResource extends Resource
 {
@@ -110,7 +110,7 @@ class ProductMovementResource extends Resource
                     ->rules(['exists:suppliers,id']),
                 Forms\Components\Select::make('requested_by')
                     ->label('Requested By')
-                    ->options(Supplier::pluck('name', 'id'))
+                    ->options(Employee::pluck('full_name', 'id'))
                     ->searchable()
                     ->preload()
                     ->visible(fn (callable $get) => $get('movement_type') === 'exit')
